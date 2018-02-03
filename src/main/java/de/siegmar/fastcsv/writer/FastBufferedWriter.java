@@ -30,8 +30,8 @@ final class FastBufferedWriter extends Writer {
 
     private static final int BUFFER_SIZE = 8192;
 
-    private Writer out;
-    private char[] buf = new char[BUFFER_SIZE];
+    private final Writer out;
+    private final char[] buf = new char[BUFFER_SIZE];
     private int pos;
 
     FastBufferedWriter(final Writer writer) {

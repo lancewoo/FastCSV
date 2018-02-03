@@ -55,7 +55,8 @@ public class CsvReaderTest {
     }
 
     public void simple() throws IOException {
-        assertEquals(readCsvRow("foo").getField(0), "foo");
+        assertEquals(readRow("foo,\"bar is quoted\",faz"),
+            Arrays.asList("foo", "bar is quoted", "faz"));
     }
 
     // skipped rows
@@ -282,6 +283,22 @@ public class CsvReaderTest {
             "CsvRow{originalLineNumber=2, fields={headerA=fieldA, headerB=fieldB, headerC=}}");
     }
 
+    // buffer edge cases
+
+    public void bufferEdgeCases() throws IOException {
+        bufferEdgeCase("a");
+        bufferEdgeCase("ab");
+        bufferEdgeCase("abc");
+    }
+
+    private void bufferEdgeCase(final String str) throws IOException {
+        final CsvRow row = readCsvRow(repeat(str, 8192));
+        assertEquals(row.getFieldCount(), 8192);
+        for (final String s : row.getFields()) {
+            assertEquals(s, str);
+        }
+    }
+
     // test helpers
 
     private CsvRow readCsvRow(final String data) throws IOException {
@@ -302,6 +319,15 @@ public class CsvReaderTest {
 
     private CsvParser parse(final String data) throws IOException {
         return csvReader.parse(new StringReader(data));
+    }
+
+    private static String repeat(final String data, final int cnt) {
+        final StringBuilder sb = new StringBuilder(data);
+        for (int i = 0; i < cnt - 1; i++) {
+            sb.append(",");
+            sb.append(data);
+        }
+        return sb.toString();
     }
 
 }

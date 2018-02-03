@@ -33,6 +33,7 @@ import java.util.Map;
 public final class CsvParser implements Closeable {
 
     private final RowReader rowReader;
+    private final RowHandler rowHandler = new RowHandler(32);
     private final boolean containsHeader;
     private final boolean skipEmptyRows;
     private final boolean errorOnDifferentFieldCount;
@@ -41,6 +42,7 @@ public final class CsvParser implements Closeable {
     private List<String> headerList;
     private long lineNo;
     private int firstLineFieldCount = -1;
+    private boolean finished;
 
     CsvParser(final Reader reader, final char fieldSeparator, final char textDelimiter,
               final boolean containsHeader, final boolean skipEmptyRows,
@@ -80,11 +82,11 @@ public final class CsvParser implements Closeable {
      * @throws IOException if an error occurred while reading data
      */
     public CsvRow nextRow() throws IOException {
-        while (!rowReader.isFinished()) {
+        while (!finished) {
             final long startingLineNo = lineNo + 1;
-            final RowReader.Line line = rowReader.readLine();
-            final String[] currentFields = line.getFields();
-            lineNo += line.getLines();
+            finished = rowReader.readLine(rowHandler);
+            final String[] currentFields = rowHandler.end();
+            lineNo += rowHandler.getLines();
 
             final int fieldCount = currentFields.length;
 
