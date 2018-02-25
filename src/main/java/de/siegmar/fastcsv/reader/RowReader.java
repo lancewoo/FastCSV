@@ -117,7 +117,8 @@ final class RowReader implements Closeable {
                         lBegin = lPos;
                     } else if (c == LF) {
                         if (lLastChar != CR) {
-                            publishColumn(rowHandler, lBuf, lBegin, lPos - lBegin - 1, lStatus, lines);
+                            publishColumn(rowHandler, lBuf, lBegin, lPos - lBegin - 1,
+                                lStatus, lines);
                             pos = begin = lPos;
                             lastChar = c;
                             return false;
@@ -153,16 +154,16 @@ final class RowReader implements Closeable {
         return newBuf;
     }
 
-    private void publishColumn(final RowHandler rowHandler, final char[] buf,
-                               final int begin, final int pos, final int status,
+    private void publishColumn(final RowHandler rowHandler, final char[] lBuf,
+                               final int lBegin, final int lPos, final int status,
                                final int lines) {
         if ((status & STATUS_QUOTED_COLUMN) == 0) {
             // column without quotes
-            rowHandler.add(buf, begin, pos, lines);
+            rowHandler.add(lBuf, lBegin, lPos, lines);
         } else {
             // column with quotes
-            final int shift = cleanDelimiters(buf, begin + 1, begin + pos, textDelimiter);
-            rowHandler.add(buf, begin + 1, pos - 1 - shift, lines);
+            final int shift = cleanDelimiters(lBuf, lBegin + 1, lBegin + lPos, textDelimiter);
+            rowHandler.add(lBuf, lBegin + 1, lPos - 1 - shift, lines);
         }
     }
 

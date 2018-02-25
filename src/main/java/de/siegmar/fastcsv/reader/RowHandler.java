@@ -30,13 +30,13 @@ final class RowHandler {
         row = new String[len];
     }
 
-    void add(final char[] value, final int offset, final int count, final int lines) {
+    void add(final char[] value, final int offset, final int count, final int linesCnt) {
         if (idx == len) {
             extendCapacity();
         }
         row[idx++] = new String(value, offset, count);
 
-        this.lines = lines;
+        this.lines = linesCnt;
     }
 
     private void extendCapacity() {
